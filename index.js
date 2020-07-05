@@ -1,3 +1,5 @@
+/* Between this comment and the comment below, DO NOT CHANGE ANY OF THIS! 
+This code is neccessary to link with the bot online, editing it will BREAK THE BOT*/
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 
@@ -5,10 +7,14 @@ const token = 'NzI3NTkxNzY4MDY1MDQ4NjU2.XvuFEw.s6FYCfJB-yVmu1T8WDpRfbh_ODE';
 
 const prefix = 'pp';
 
-var lastMessage;
+// Allows the bot to go online
 bot.on('ready', () =>{
     console.log('Bot is online!');
 })
+/* DO NOT EDIT ANYTHING ABOVE THIS CODE. LEAVE THIS CODE AS IS. 
+THIS CODE MUST REMAIN THE SAME.*/
+
+var lastMessage;
 
 bot.on('message', msg =>{
     let args = msg.content.substring(prefix.length).split(" ");
@@ -28,7 +34,8 @@ bot.on('message', msg =>{
             return msg.reply("Alice sucks");
             break;
         case 'alice':
-            return msg.reply('Alice')
+            return msg.reply('Alice sucks');
+
     }
 })
 
