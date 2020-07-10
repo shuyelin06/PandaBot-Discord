@@ -5,7 +5,7 @@ const bot = new Discord.Client();
 
 const token = 'NzI3NTkxNzY4MDY1MDQ4NjU2.XvuFEw.s6FYCfJB-yVmu1T8WDpRfbh_ODE';
 
-const prefix = 'pp';
+const prefix = '#';
 
 // Allows the bot to go online
 bot.on('ready', () =>{
