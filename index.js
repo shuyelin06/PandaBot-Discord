@@ -7,6 +7,7 @@ const token = 'NzI3NTkxNzY4MDY1MDQ4NjU2.XvuFEw.s6FYCfJB-yVmu1T8WDpRfbh_ODE';
 
 const prefix = '#';
 
+bot.login(token);
 // Allows the bot to go online
 bot.on('ready', () =>{
     console.log('Bot is online!');
@@ -14,6 +15,7 @@ bot.on('ready', () =>{
 /* DO NOT EDIT ANYTHING ABOVE THIS CODE. LEAVE THIS CODE AS IS. 
 THIS CODE MUST REMAIN THE SAME.*/
 
+// Josh's Code (Only Josh will edit)
 var lastMessage;
 
 bot.on('message', msg =>{
@@ -39,4 +41,8 @@ bot.on('message', msg =>{
     }
 })
 
-bot.login(token);
+// Richard's Code (Only Richard will edit)
+
+
+
+// Alice's Code (Only Alice will edit)
