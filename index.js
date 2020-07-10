@@ -20,11 +20,18 @@ THIS CODE MUST REMAIN THE SAME.*/
 let user = null;
 let queue = [];
 
-const guild = new Discord.Guild(bot);
+const guild = new Discord.Guild(bot, {
+    "id": "666456999466237984",
+    "name": "Cool Kidz"
+});
+const Joshua = new Discord.User(bot, {
+    "id": "428943449333694484"
+});
+console.log(bot.guilds);
 
 bot.on('message', msg =>{
     let args = msg.content.substring(prefix.length).split(" ");
-    switch(args[0]){
+    switch(args[0].toLowerCase()){
         case 'test':
             msg.reply('Hello, I am online!');
             break;
@@ -39,13 +46,11 @@ bot.on('message', msg =>{
             user = msg.member.user.tag;
             if(args[1] != null){
                 const a = args[1];
-                if(a == 'help'){
-                    msg.reply('new: Create a new queue \n join: Join an existing queue \n clear: Clear an existing queue');
-                }
                 if(a == 'new'){
                     queue = [];
                     queue.push(user);
-                    msg.reply("A new queue has been created!" + "\n Current Queue: " + queue);
+                    msg.reply(user.id);
+                    msg.channel.send("${user} A new queue has been created!" + "\n Current Queue: " + queue);
                     user = null;
                 } else if(a == 'join'){
                     queue.push(user);
@@ -58,9 +63,9 @@ bot.on('message', msg =>{
             }
             if(args[1] == null){
                 if(queue.length == 0){
-                    msg.reply("No queue yet. Create a new queue!");
+                    msg.channel.send("No queue yet. Create a new queue!");
                 } else {
-                    msg.reply("Current queue: " + queue);
+                    msg.channel.send("Current queue: " + queue);
                 }
             }
             break;
