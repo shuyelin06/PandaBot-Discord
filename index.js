@@ -1,5 +1,3 @@
-/* Between this comment and the comment below, DO NOT CHANGE ANY OF THIS! 
-This code is neccessary to link with the bot online, editing it will BREAK THE BOT*/
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 
@@ -7,7 +5,6 @@ const token = 'NzI3NTkxNzY4MDY1MDQ4NjU2.XvuFEw.s6FYCfJB-yVmu1T8WDpRfbh_ODE';
 
 const prefix = '$';
 
-// Allows the bot to go online
 bot.on('ready', () =>{
     bot.channels.cache.get('716378365216686184').send('I am online!');
     console.log('Bot is online!');
@@ -15,7 +12,24 @@ bot.on('ready', () =>{
 /* DO NOT EDIT ANYTHING ABOVE THIS CODE. LEAVE THIS CODE AS IS. 
 THIS CODE MUST REMAIN THE SAME.*/
 
+// User Data (Not sure if I'm gonna use this yet)
+
 // Josh's Code (Only Josh will edit)
+const Joshua = new Discord.User(bot, {
+    "id": "428943449333694484"
+});
+const Richard = new Discord.User(bot, {
+    "id": "472470907135328257"
+});
+const Julie = new Discord.User(bot, {
+    "id": "330514479424995328"
+});
+const Alice = new Discord.User(bot, {
+    "id": "622598371693166603"
+});
+const Meilin = new Discord.User(bot, {
+    "id": "622221751190814734"
+});
 
 let user = null;
 let queue = [];
@@ -24,9 +38,7 @@ const guild = new Discord.Guild(bot, {
     "id": "666456999466237984",
     "name": "Cool Kidz"
 });
-const Joshua = new Discord.User(bot, {
-    "id": "428943449333694484"
-});
+
 console.log(bot.guilds);
 
 bot.on('message', msg =>{
