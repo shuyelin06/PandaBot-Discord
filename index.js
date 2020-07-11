@@ -37,6 +37,8 @@ let queue = [];
 const guild = new Discord.Guild(bot, {
     "id": "666456999466237984",
     "name": "Cool Kidz"
+    
+
 });
 
 console.log(bot.guilds);
