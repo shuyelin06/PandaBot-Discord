@@ -15,33 +15,9 @@ THIS CODE MUST REMAIN THE SAME.*/
 // User Data (Not sure if I'm gonna use this yet)
 
 // Josh's Code (Only Josh will edit)
-const Joshua = new Discord.User(bot, {
-    "id": "428943449333694484"
-});
-const Richard = new Discord.User(bot, {
-    "id": "472470907135328257"
-});
-const Julie = new Discord.User(bot, {
-    "id": "330514479424995328"
-});
-const Alice = new Discord.User(bot, {
-    "id": "622598371693166603"
-});
-const Meilin = new Discord.User(bot, {
-    "id": "622221751190814734"
-});
-
 let user = null;
 let queue = [];
-
-const guild = new Discord.Guild(bot, {
-    "id": "666456999466237984",
-    "name": "Cool Kidz"
-    
-
-});
-
-console.log(bot.guilds);
+let queueNotify = [];
 
 bot.on('message', msg =>{
     let args = msg.content.substring(prefix.length).split(" ");
@@ -57,35 +33,58 @@ bot.on('message', msg =>{
             msg.reply(args[1] + ' messages have been deleted');
             break;
         case 'q':
-            user = msg.member.user.tag;
+            user = msg.member.user;
             if(args[1] != null){
                 const a = args[1];
-                if(a == 'new'){
+                if(a == 'new')
+                {
                     queue = [];
-                    queue.push(user);
-                    msg.reply(user.id);
-                    msg.channel.send("${user} A new queue has been created!" + "\n Current Queue: " + queue);
+                    queue.push(user.username);
+                    queueNotify.push(user);
+                    msg.channel.send("here (this will become a tag later)" + `\nA new queue has been created!\nTo join the queue, type \'$q join\'!` + "\nCurrent Queue: \n" + queue);
                     user = null;
-                } else if(a == 'join'){
-                    queue.push(user);
-                    msg.reply(user + " has been added to the queue!" + "\n Current Queue: " + queue);
+                } 
+                else if(a == 'join')
+                {
+                    if(!queue.includes(user.username)){
+                        queue.push(user.username);
+                        queueNotify.push(user);
+                        msg.channel.send(queueNotify + "\n" + user.username + " has been added to the queue!" + "\nCurrent Queue: \n" + queue);
+                    } else {
+                        msg.reply("You are already in the queue!");
+                    }
                     user = null;
-                } else if(a == 'clear'){
+                } 
+                else if(a == 'clear')
+                {
                     queue = [];
-                    msg.reply("Queue has been reset.");
+                    queueNotify = [];
+                    msg.reply("Queue has been cleared.");
+                }
+                else if(a == 'remove'){
+                    let q = queue.indexOf(user.username);
+                    queue.splice(q);
+                    let z = queueNotify.indexOf(user);
+                    queueNotify.splice(z);
+                    msg.reply("You have been removed from the queue.")
+                    msg.channel.send("Current queue: " + queue);
                 }
             }
             if(args[1] == null){
                 if(queue.length == 0){
                     msg.channel.send("No queue yet. Create a new queue!");
                 } else {
-                    msg.channel.send("Current queue: " + queue);
+                    msg.channel.send("Current queue: \n" + queue);
                 }
             }
             break;
     }
 })
 
+function queueEmpty(){
+    if(queue.length == 0){
+    }
+}
 // Richard's Code (Only Richard will edit)
 
 
