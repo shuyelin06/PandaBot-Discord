@@ -20,11 +20,7 @@ module.exports = {
                 queue.push(user.username);
                 queueNotify.push(user);
                 msg.channel.send("@here" + `\nA new queue has been created!\nTo join the queue, type \'$q join\'!`);
-                if(queue.length == 0){
-                    msg.channel.send("No queue yet. Create a new queue with $q new!");
-                } else {
-                    msg.channel.send("Current queue: \n" + queue);
-                }
+                showQueue();
                 user = null;
                 break;
             case 'join':
@@ -32,11 +28,7 @@ module.exports = {
                     queue.push(user.username);
                     queueNotify.push(user);
                     msg.channel.send(queueNotify + "\n" + user.username + " has been added to the queue!");
-                    if(queue.length == 0){
-                        msg.channel.send("No queue yet. Create a new queue with $q new!");
-                    } else {
-                        msg.channel.send("Current queue: \n" + queue);
-                    }
+                    showQueue();
                 } else {
                     msg.reply("You are already in the queue!");
                 }
@@ -45,11 +37,7 @@ module.exports = {
             case 'clear':
                 queue = [];
                 queueNotify = [];
-                if(queue.length == 0){
-                    msg.channel.send("No queue yet. Create a new queue with $q new!");
-                } else {
-                    msg.channel.send("Current queue: \n" + queue);
-                }
+                showQueue();
                 break;
             case 'remove':
                 let q = queue.indexOf(user.username);
@@ -57,12 +45,23 @@ module.exports = {
                 let z = queueNotify.indexOf(user);
                 queueNotify.splice(z);
                 msg.reply("You have been removed from the queue.")
-                if(queue.length == 0){
-                    msg.channel.send("No queue yet. Create a new queue with $q new!");
-                } else {
-                    msg.channel.send("Current queue: \n" + queue);
-                }
+                showQueue();
                 break;
+        }
+        function showQueue(){
+            if(queue.length == 0){
+                msg.channel.send("No queue yet. Create a new queue with $q new!");
+            } else {
+                let display = []
+                display.push("Current queue: ");
+                queue.forEach(element => display.push(element));
+                msg.channel.send(display);
+            }
         }
     }
 }
+
+/* 
+Add reactions to join queues,
+Make people queued show up as a list
+*/

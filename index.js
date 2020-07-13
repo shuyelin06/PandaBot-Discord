@@ -36,7 +36,7 @@ bot.on('message', msg =>{
     if(!command) return;
     
     if (command.guildOnly && msg.channel.type !== 'text'){
-        return message.reply('I cannot execute that command inside DMs!');
+        return msg.reply('I cannot execute that command inside DMs!');
     }
 
     if (command.args && !args.length){

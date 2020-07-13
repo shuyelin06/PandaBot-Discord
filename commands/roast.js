@@ -23,14 +23,12 @@ module.exports = {
     usage: '<tagged user>',
     execute(msg, args){
         let mention = msg.mentions.users.first();
-        if(msg.member.user.tag != "alice#0520"){
-            msg.reply("Unfortunately, you are too beta for me to listen to.");
-        } else if (args[0] ==  null || mention == null){
+        if (args[0] ==  null || mention == null){
             msg.reply("Please tag a valid user to roast.");
         } else if (mention.tag == "Pandakidz2#0384"){
             msg.reply("I cannot roast my creator.");
         } else {
-            msg.channel.send(mention.username + ", " + roastList[randomNumber(0, roastList.length-1)]);
+            msg.channel.send(mention.username + ", " + roastList[randomNumber(0, roastList.length - 1)]);
         }
     }
 }
