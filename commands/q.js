@@ -1,10 +1,6 @@
 const Discord = require('discord.js');
 let dict = {
 };
-let gameSelection ={ 
-    "League": "league icon",
-};
-
 
 module.exports = {
     name: 'q',
@@ -193,9 +189,6 @@ module.exports = {
                     msg.channel.send(notify(tempT) + "\n" + msg.author.username + "'s queue time has been set to " + hour + ":" + minute + pm + "MST");   
                     console.log(dict[tempT].time);                 
                     break;
-                case 'game':
-
-                    break;
             }
         }
     }
@@ -246,7 +239,6 @@ function notify(key){
     dict[key].notify.forEach(element => notify.push(element));
     return notify;
 }
-
 function inQueue(queue, person){
     for(var key in queue){
         if(queue[key] == person){
