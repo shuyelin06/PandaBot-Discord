@@ -13,14 +13,16 @@ module.exports = {
     execute(msg, args){
         class Queue {
             constructor(client){
-                this.list = []
-                this.client = client;
-                this.notify = [];
-                this.time = new Date();
+                this.list = [] // List that contains all of the queue members
+                this.client = client; // Stores who created the queue
+                this.notify = []; // Notifies people if a change occurs to the queue
+                this.time = new Date(0); // Create a queue time
+                this.timeChanged = false; // Store if the queue time has been changed.
             }
         }
 
         switch(args[0]){
+            // Contains a list of all of the commands 
             case 'help':
                 let qhelp = [];
                 qhelp.push(`**PandaBot Queue ($q) Commands: **`);
@@ -35,8 +37,11 @@ module.exports = {
                 qhelp.push("**delete**: Delete your current queue.");
                 qhelp.push("**add <user>**: Add a user to your current queue.");
                 qhelp.push("**remove <user>**: Remove a user from your current queue.");
+                qhelp.push("**time <hours:minutes> <am/pm>**: Add a time to your queue so others know when it starts!");
+                qhelp.push("**time clear**: Clears your queue time");
                 msg.channel.send(qhelp);
                 break;
+            // Create a new queue
             case 'new':
                 if(!args[1]) msg.reply("Please provide a name for your queue");
                 else {
@@ -67,6 +72,7 @@ module.exports = {
                     }
                 }
                 break;
+            // Show existing queues
             case 'show':
                 if(!args[1] && Object.keys(dict).length != 0){
                     let queueList = queueListEmbed();
@@ -78,6 +84,7 @@ module.exports = {
                     msg.channel.send("Nothing could be found. Please try again.");
                 }
                 break;
+            // Join existing queues
             case 'join':
                 if(!args[1]) msg.reply("Please provide the name of the queue you would like to join.");
                 else if (args[1] && keyExists(args[1])){
@@ -92,6 +99,7 @@ module.exports = {
                     }
                 } else msg.reply("Queue could not be found. Please try again.");
                 break;
+            // Leave existing queues
             case 'leave':
                 if(!args[1]) msg.reply("Please provide the name of the queue you would like to leave.");
                 else if (args[1] && keyExists(args[1])){
@@ -154,9 +162,11 @@ module.exports = {
                 case 'time':
                     let argT = msg.content.slice(1).split(/ +/);
                     let time = argT[2].split(/:/);
-                    var tempT;
-                    for(var key in dict){
-                        if(dict[key].client == msg.author.tag) tempT = key;
+                    var tempT = findQueue(msg.author.tag);
+                    if(args[1] == 'clear'){
+                        dict[tempT].timeChanged = false;
+                        msg.reply("Queue time has been cleared.");
+                        return;
                     }
                     
                     //Setting the queue time
@@ -169,6 +179,7 @@ module.exports = {
                     dict[tempT].time.setMinutes(time[1]);
                     dict[tempT].time.setSeconds(0);
                     dict[tempT].time.setMilliseconds(0);
+                    dict[tempT].timeChanged = true;
 
                     //Displaying the queue time
                     var hour = dict[tempT].time.getHours();
@@ -179,7 +190,7 @@ module.exports = {
                         pm = " PM "
                     }
                     if(minute == 0) minute = "00";
-                    msg.channel.send(notify(tempT) + "\n" + msg.author.username + "'s queue time has been set to " + hour + ":" + minute + pm + "EST");   
+                    msg.channel.send(notify(tempT) + "\n" + msg.author.username + "'s queue time has been set to " + hour + ":" + minute + pm + "MST");   
                     console.log(dict[tempT].time);                 
                     break;
                 case 'game':
@@ -192,7 +203,7 @@ module.exports = {
 
 function queueListEmbed(){
     const queueList = new Discord.MessageEmbed()
-        .setColor("AQUA")
+        .setColor("NAVY")
         .setTitle('Available Queues')
         .setAuthor("PandaBot $q")
         .setDescription("Below are a list of available queues!")
@@ -205,11 +216,22 @@ function queueListEmbed(){
 }
 function queueEmbed(q){
     const queue = new Discord.MessageEmbed()
-        .setColor("AQUA")
-        .setTitle('List of people in ' + dict[q].client + "'s queue " + q)
-        .setAuthor("PandaBot $q")
+        .setColor("RANDOM")
+        .setTitle('List of people in ' + dict[q].client + "'s queue: " + q)
         .setDescription("Below are the list of members in the queue!")
-        .setFooter("Type $q show followed by the name of the queue to see more details about it!");
+        .setFooter("Type $q join " + q + " in order to join this queue!");
+    // Change this after switching timezones back to EST
+    if(dict[q].timeChanged == true) {
+        let hour = dict[q].time.getHours()+2;
+        let minute = dict[q].time.getMinutes();
+        let pm = " am "
+        if(hour>12){
+            hour -= 12;
+            pm = " pm ";
+        }
+        if(minute == 0) minute = "00";
+        queue.setAuthor("Queue Time: " + hour + ":" + minute + pm + "Eastern Standard Time");
+    }
     let tempList = []
     for(var key in dict[q].list){
         tempList.push(dict[q].list[key]);
@@ -218,23 +240,6 @@ function queueEmbed(q){
     queue.addField(tempList, '\u200b');
     console.log(queue);
     return queue;
-}
-function display(list){ 
-    let display = [];
-    if(Array.isArray(list)){
-        display.push("Current queue: ");
-        for(var key in list){
-            display.push(list[key]);
-        }
-    } 
-    else {
-        display.push("Current queues: ");
-        for(var key in list){
-            display.push(key + "  --  " + dict[key].client + "\'s Queue");
-        }
-    }
-    display.push("\nNote: To access a specific queue, type $q show followed by the queue name!");
-    return display;
 }
 function notify(key){
     let notify = [];
