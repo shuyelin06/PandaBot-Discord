@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 let dict = {
 };
-
+let IDlist = [0];
 module.exports = {
     name: 'q',
     description: 'Create and manage queues for an easier way to set up games (or anything else)! Type $q help for all of the specific commands!',
@@ -11,12 +11,13 @@ module.exports = {
             constructor(client){
                 this.list = [] // List that contains all of the queue members
                 this.client = client; // Stores who created the queue
-                this.notify = []; // Notifies people if a change occurs to the queue
+                this.notify = [notify]; // Notifies people if a change occurs to the queue
                 this.time = new Date(0); // Create a queue time
                 this.timeChanged = false; // Store if the queue time has been changed.
             }
         }
 
+        console.log(dict);
         switch(args[0]){
             // Contains a list of all of the commands 
             case 'help':
@@ -24,9 +25,9 @@ module.exports = {
                 qhelp.push(`**PandaBot Queue ($q) Commands: **`);
                 qhelp.push("\n**Ordinary Comands: **");
                 qhelp.push("**new**: Create a new queue that others can join (limit one queue per person)!");
-                qhelp.push("**show [queue name]**: Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!");
-                qhelp.push("**join <queue name>**: Join an existing queue. Make sure you type the correct nme of the queue.");
-                qhelp.push("**leave <queue name>**: Leave an existing queue. Make sure you type the correct queue name");
+                qhelp.push("**show [queue name or id]**: Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!");
+                qhelp.push("**join <queue name or id>**: Join an existing queue. Make sure you type the correct nme of the queue.");
+                qhelp.push("**leave <queue name or id>**: Leave an existing queue. Make sure you type the correct queue name");
 
                 qhelp.push(`\n**Queue Creator Commands: **`);
                 qhelp.push("These commands can be used by those that have created their queue. They allow for some extra permissions for you to manage your queue.");
@@ -48,9 +49,7 @@ module.exports = {
                         }
                     }
                     if(Object.keys(dict).length == 0){
-                        dict[args[1]] = new Queue(msg.author.tag);
-                        dict[args[1]].list.push(msg.author.username);
-                        dict[args[1]].notify.push(msg.author);
+                        dict[args[1]] = new Queue(msg.author.tag, queueID(), msg.author.username, msg.author);
                         msg.reply("You have created a new queue called " + args[1] + "!");
                     }
                     else {
@@ -59,9 +58,7 @@ module.exports = {
                             if(key != args[1]) lengthCheck++;
                         }
                         if(lengthCheck == Object.keys(dict).length){
-                            dict[args[1]] = new Queue(msg.author.tag);
-                            dict[args[1]].list.push(msg.author.username);
-                            dict[args[1]].notify.push(msg.author);
+                            dict[args[1]] = new Queue(msg.author.tag, queueID(), msg.author.username, msg.author);
                             msg.reply("You have created a new queue called " + args[1] + "!");
                         }
                         else msg.reply("A queue with this name already exists!");
@@ -71,11 +68,9 @@ module.exports = {
             // Show existing queues
             case 'show':
                 if(!args[1] && Object.keys(dict).length != 0){
-                    let queueList = queueListEmbed();
-                    msg.channel.send({embed: queueList});
+                    msg.channel.send({embed: queueListEmbed()});
                 } else if (args[1] && keyExists(args[1])){
-                    let queue = queueEmbed(args[1]);
-                    msg.channel.send({embed: queue});
+                    msg.channel.send({embed: queueEmbed(findKey(args[1]))});
                 } else {
                     msg.channel.send("Nothing could be found. Please try again.");
                 }
@@ -83,36 +78,40 @@ module.exports = {
             // Join existing queues
             case 'join':
                 if(!args[1]) msg.reply("Please provide the name of the queue you would like to join.");
-                else if (args[1] && keyExists(args[1])){
-                    if(!inQueue(dict[args[1]].list, msg.author.username)){
-                        dict[args[1]].list.push(msg.author.username);
-                        dict[args[1]].list.push(msg.author);
-                        msg.channel.send(notify(args[1]) + "\n" + msg.author.username + " has joined queue " + args[1]);
-                        let queue = queueEmbed(args[1]);
-                        msg.channel.send({embed: queue});
+                else if ( args[1] && keyExists(args[1]) ){
+                    let a = findKey(args[1]);
+                    if(!inQueue(dict[a].list, msg.author.username)){
+                        dict[a].list.push(msg.author.username);
+                        dict[a].notify.push(msg.author);
+                        msg.channel.send(notify(a) + "\n" + msg.author.username + " has joined queue " + a);
+                        msg.channel.send({embed: queueEmbed(a)});
                     } else {
                         msg.reply("You are already in the queue!");
                     }
-                } else msg.reply("Queue could not be found. Please try again.");
+                } else {
+                    msg.reply("Queue could not be found. Please try again.");
+                }
                 break;
             // Leave existing queues
             case 'leave':
                 if(!args[1]) msg.reply("Please provide the name of the queue you would like to leave.");
-                else if (args[1] && keyExists(args[1])){
-                    if(dict[args[1]].client == msg.author.tag){
-                        deleteQueue(args[1]);
+                else if ( args[1] && keyExists(args[1]) ){
+                    let a = findKey(args[1]);
+                    if(dict[a].client == msg.author.tag){
+                        delete IDlist[IDlist.indexOf(dict[a].id)];
+                        deleteQueue(a);
                         msg.channel.send(msg.author.username + "\'s queue has been deleted.");
-                    } else if(inQueue(dict[args[1]].list, msg.author.username)){
-                        var i = dict[args[1]].list.indexOf(msg.author.username);
-                        var z = dict[args[1]].notify.indexOf(msg.author);
-                        delete dict[args[1]].notify[z];
-                        delete dict[args[1]].list[i];
-                        msg.reply(notify(args[1]) + "\n" + msg.author.username + " has left queue " + args[1]);
-                        let queue = queueEmbed(args[1]);
-                        msg.channel.send({embed: queue});
-                        if(dict[args[1]].list.length == 0){
-                            deleteQueue(args[1]);
-                            msg.channel.reply("As " + args[1] + " is now empty, it has been deleted.");
+                    } else if(inQueue(dict[a].list, msg.author.username)){
+                        var i = dict[a].list.indexOf(msg.author.username),
+                            z = dict[a].notify.indexOf(msg.author);
+                        delete dict[a].notify[z];
+                        delete dict[a].list[i];
+                        msg.reply(notify(a) + "\n" + msg.author.username + " has left queue " + a);
+                        msg.channel.send({embed: queueEmbed(a)});
+                        if(dict[a].list.length == 0){
+                            delete IDlist[IDlist.indexOf(dict[a].id)];
+                            deleteQueue(a);
+                            msg.channel.reply("As " + a + " is now empty, it has been deleted.");
                         }
                     } else msg.reply("You are not in the queue!");
                 } else msg.reply("Queue could not be found. Please ty again.");
@@ -123,6 +122,7 @@ module.exports = {
             switch(args[0]){
                 case 'delete':
                     let tempD = findQueue(msg.author.tag);
+                    delete IDlist[IDlist.indexOf(dict[tempD].id)];
                     deleteQueue(tempD);
                     msg.reply("Your queue, " + tempD + ", has been deleted.");
                     break;
@@ -134,8 +134,7 @@ module.exports = {
                         dict[tempA].list.push(mentionA.username);
                         dict[tempA].notify.push(mentionA);
                         msg.channel.send(notify(tempA) + "\n" + mentionA.username + " has been added to queue " + tempA + "!");
-                        let queue = queueEmbed(tempA);
-                        msg.channel.send({embed: queue});
+                        msg.channel.send({embed: queueEmbed(tempA)});
                     }
                     break;
                 case 'remove':
@@ -146,13 +145,12 @@ module.exports = {
                     }
                     var tempR = findQueue(msg.author.tag);
                     if(inQueue(dict[tempR].list, mentionR.username)){
-                        let i = dict[tempR].list.indexOf(mentionR.username);
-                        let z = dict[tempR].notify.indexOf(mentionR);
+                        let i = dict[tempR].list.indexOf(mentionR.username),
+                            z = dict[tempR].notify.indexOf(mentionR);
                         delete dict[tempR].notify[z];
                         delete dict[tempR].list[i];
                         msg.channel.send(notify(tempR) + "\n" +"<@"+mentionR.id+">" + " has been removed from queue " + tempR);
-                        let queue = queueEmbed(tempR);
-                        msg.channel.send({embed: queue});
+                        msg.channel.send({embed: queueEmbed(tempR)});
                     }
                     break;
                 case 'time':
@@ -186,8 +184,7 @@ module.exports = {
                         pm = " PM "
                     }
                     if(minute == 0) minute = "00";
-                    msg.channel.send(notify(tempT) + "\n" + msg.author.username + "'s queue time has been set to " + hour + ":" + minute + pm + "MST");   
-                    console.log(dict[tempT].time);                 
+                    msg.channel.send(notify(tempT) + "\n" + msg.author.username + "'s queue time has been set to " + hour + ":" + minute + pm + "MST");         
                     break;
             }
         }
@@ -200,13 +197,15 @@ function queueListEmbed(){
         .setTitle('Available Queues')
         .setAuthor("PandaBot $q")
         .setDescription("Below are a list of available queues!")
+        .addField("<id> -- <queue name>", "Both id and name can be used to join and leave queues!")
         .setFooter("Type $q show followed by the name of the queue to see more details about it!");
 
     for(var key in dict){
-        queueList.addField(key, dict[key].client + "'s Queue");
+        queueList.addField(dict[key].id + " -- " + key, dict[key].client + "'s Queue");
     }
     return queueList;
 }
+
 function queueEmbed(q){
     const queue = new Discord.MessageEmbed()
         .setColor("RANDOM")
@@ -231,7 +230,6 @@ function queueEmbed(q){
     }
     tempList.join(", ")
     queue.addField(tempList, '\u200b');
-    console.log(queue);
     return queue;
 }
 function notify(key){
@@ -251,7 +249,16 @@ function keyExists(args){
     for(var key in dict){
         if(args == key) return true;
     }
+    for(let i in dict){
+        if(dict[i].id == args) return true;
+    }
     return false;
+}
+function findKey(args){
+    for(let k in dict){
+        if(k == args) return k;
+        else if(dict[k].id == args) return k;
+    }
 }
 function checkIfClient(user){
     for(var key in dict){
@@ -269,5 +276,13 @@ function deleteQueue(name){
 function findQueue(client){
     for(var key in dict){
         if(dict[key].client == client) return key;
+    }
+}
+function queueID(){
+    for(var i = 0; i < IDlist.length + 1; i++){
+        if(i!=IDlist[i]){
+            IDlist[i]=i;
+            return i;
+        }
     }
 }
