@@ -14,7 +14,6 @@ for (const file of commandFiles){
 const { prefix, token } = require('./config.json');
 
 bot.on('ready', () =>{
-    bot.channels.cache.get('716378365216686184').send('I am online!');
     console.log('Bot is online!');
     bot.user.setActivity("$help");
 })

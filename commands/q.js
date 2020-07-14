@@ -10,24 +10,25 @@ module.exports = {
                 this.list = []
                 this.client = client;
                 this.notify = [];
+                this.time = new Date();
             }
         }
 
         switch(args[0]){
             case 'help':
                 let qhelp = [];
-                qhelp.push("PandaBot Queue (q) Commands: ");
-                qhelp.push("\nOrdinary Comands: ");
-                qhelp.push("new: Create a new queue that others can join (limit one queue per person)!");
-                qhelp.push("show <queue name>: Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!");
-                qhelp.push("join <queue name>: Join an existing queue. Make sure you type the correct nme of the queue.");
-                qhelp.push("leave <queue name>: Leave an existing queue. Make sure you type the correct queue name");
+                qhelp.push(`**PandaBot Queue ($q) Commands: **`);
+                qhelp.push("\n**Ordinary Comands: **");
+                qhelp.push("**new**: Create a new queue that others can join (limit one queue per person)!");
+                qhelp.push("**show [queue name]**: Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!");
+                qhelp.push("**join <queue name>**: Join an existing queue. Make sure you type the correct nme of the queue.");
+                qhelp.push("**leave <queue name>**: Leave an existing queue. Make sure you type the correct queue name");
 
-                qhelp.push("\nQueue Creator Commands: ");
+                qhelp.push(`\n**Queue Creator Commands: **`);
                 qhelp.push("These commands can be used by those that have created their queue. They allow for some extra permissions for you to manage your queue.");
-                qhelp.push("delete: Delete your current queue.");
-                qhelp.push("add <user>: Add a user to your current queue.");
-                qhelp.push("remove <user>: Remove a user from your current queue.");
+                qhelp.push("**delete**: Delete your current queue.");
+                qhelp.push("**add <user>**: Add a user to your current queue.");
+                qhelp.push("**remove <user>**: Remove a user from your current queue.");
                 msg.channel.send(qhelp);
                 break;
             case 'new':
@@ -134,6 +135,9 @@ module.exports = {
                         delete dict[tempR].list[i];
                         msg.channel.send("<@"+mentionR.id+">" + " has been removed from queue " + tempR);
                     }
+                    break;
+                case 'time':
+                    // set a time for teh queu to pop
                     break;
             }
         }
