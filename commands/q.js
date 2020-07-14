@@ -8,8 +8,9 @@ module.exports = {
     aliases: ['queue'],
     execute(msg, args){
         class Queue {
-            constructor(client){
-                this.list = [] // List that contains all of the queue members
+            constructor(client, id, list, notify){
+                this.id = id;
+                this.list = [list] // List that contains all of the queue members
                 this.client = client; // Stores who created the queue
                 this.notify = [notify]; // Notifies people if a change occurs to the queue
                 this.time = new Date(0); // Create a queue time
