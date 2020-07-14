@@ -1,8 +1,11 @@
+const Discord = require('discord.js');
 let dict = {
 };
 let gameSelection ={ 
     "League": "league icon",
 };
+
+
 module.exports = {
     name: 'q',
     description: 'Create and manage queues for an easier way to set up games (or anything else)! Type $q help for all of the specific commands!',
@@ -16,7 +19,7 @@ module.exports = {
                 this.time = new Date();
             }
         }
-        
+
         switch(args[0]){
             case 'help':
                 let qhelp = [];
@@ -66,9 +69,11 @@ module.exports = {
                 break;
             case 'show':
                 if(!args[1] && Object.keys(dict).length != 0){
-                    msg.channel.send(display(dict));
+                    let queueList = queueListEmbed();
+                    msg.channel.send({embed: queueList});
                 } else if (args[1] && keyExists(args[1])){
-                    msg.channel.send(display(dict[args[1]].list));
+                    let queue = queueEmbed(args[1]);
+                    msg.channel.send({embed: queue});
                 } else {
                     msg.channel.send("Nothing could be found. Please try again.");
                 }
@@ -80,7 +85,8 @@ module.exports = {
                         dict[args[1]].list.push(msg.author.username);
                         dict[args[1]].list.push(msg.author);
                         msg.channel.send(notify(args[1]) + "\n" + msg.author.username + " has joined queue " + args[1]);
-                        msg.channel.send(display(dict[args[1]].list));
+                        let queue = queueEmbed(args[1]);
+                        msg.channel.send({embed: queue});
                     } else {
                         msg.reply("You are already in the queue!");
                     }
@@ -98,7 +104,8 @@ module.exports = {
                         delete dict[args[1]].notify[z];
                         delete dict[args[1]].list[i];
                         msg.reply(notify(args[1]) + "\n" + msg.author.username + " has left queue " + args[1]);
-                        msg.channel.send(display(dict[args[1]].list));
+                        let queue = queueEmbed(args[1]);
+                        msg.channel.send({embed: queue});
                         if(dict[args[1]].list.length == 0){
                             deleteQueue(args[1]);
                             msg.channel.reply("As " + args[1] + " is now empty, it has been deleted.");
@@ -123,7 +130,8 @@ module.exports = {
                         dict[tempA].list.push(mentionA.username);
                         dict[tempA].notify.push(mentionA);
                         msg.channel.send(notify(tempA) + "\n" + mentionA.username + " has been added to queue " + tempA + "!");
-                        msg.channel.send(display(dict[tempA].list));
+                        let queue = queueEmbed(tempA);
+                        msg.channel.send({embed: queue});
                     }
                     break;
                 case 'remove':
@@ -139,7 +147,8 @@ module.exports = {
                         delete dict[tempR].notify[z];
                         delete dict[tempR].list[i];
                         msg.channel.send(notify(tempR) + "\n" +"<@"+mentionR.id+">" + " has been removed from queue " + tempR);
-                        msg.channel.send(display(dict[tempR].list));
+                        let queue = queueEmbed(tempR);
+                        msg.channel.send({embed: queue});
                     }
                     break;
                 case 'time':
@@ -181,6 +190,35 @@ module.exports = {
     }
 }
 
+function queueListEmbed(){
+    const queueList = new Discord.MessageEmbed()
+        .setColor("AQUA")
+        .setTitle('Available Queues')
+        .setAuthor("PandaBot $q")
+        .setDescription("Below are a list of available queues!")
+        .setFooter("Type $q show followed by the name of the queue to see more details about it!");
+
+    for(var key in dict){
+        queueList.addField(key, dict[key].client + "'s Queue");
+    }
+    return queueList;
+}
+function queueEmbed(q){
+    const queue = new Discord.MessageEmbed()
+        .setColor("AQUA")
+        .setTitle('List of people in ' + dict[q].client + "'s queue " + q)
+        .setAuthor("PandaBot $q")
+        .setDescription("Below are the list of members in the queue!")
+        .setFooter("Type $q show followed by the name of the queue to see more details about it!");
+    let tempList = []
+    for(var key in dict[q].list){
+        tempList.push(dict[q].list[key]);
+    }
+    tempList.join(", ")
+    queue.addField(tempList, '\u200b');
+    console.log(queue);
+    return queue;
+}
 function display(list){ 
     let display = [];
     if(Array.isArray(list)){
