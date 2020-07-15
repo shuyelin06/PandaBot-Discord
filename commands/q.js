@@ -27,8 +27,6 @@ module.exports = {
                 this.game = null;
             }
         }
-
-        console.log(dict);
         switch(args[0].toLowerCase()){
             // Contains a list of all of the commands 
             case 'help':
@@ -86,7 +84,7 @@ module.exports = {
                 } else if (args[1] && keyExists(args[1])){
                     msg.channel.send({embed: queueEmbed(findKey(args[1]))});
                 } else {
-                    msg.channel.send("Nothing could be found. Please try again.");
+                    msg.channel.send("No queues available. Create a new one!");
                 }
                 break;
             // Join existing queues
