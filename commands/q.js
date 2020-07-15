@@ -2,6 +2,15 @@ const Discord = require('discord.js');
 let dict = {
 };
 let IDlist = [0];
+let gameList = {
+    "League": 'https://i.imgur.com/RjefbUN.png',
+    "CSGO": 'https://i.imgur.com/2RCFhEn.png',
+    "Stardew": 'https://i.imgur.com/Zc87TZ1.png',
+    "Minecraft": 'https://i.imgur.com/LqB6ps8.png',
+    "Valorant": 'https://i.imgur.com/r3PcZBw.png',
+    "Apex": 'https://i.imgur.com/J1yaxlr.png',
+    "Terraria": 'https://i.imgur.com/SzP5uXW.png'
+}
 module.exports = {
     name: 'q',
     description: 'Create and manage queues for an easier way to set up games (or anything else)! Type $q help for all of the specific commands!',
@@ -15,11 +24,12 @@ module.exports = {
                 this.notify = [notify]; // Notifies people if a change occurs to the queue
                 this.time = new Date(0); // Create a queue time
                 this.timeChanged = false; // Store if the queue time has been changed.
+                this.game = null;
             }
         }
 
         console.log(dict);
-        switch(args[0]){
+        switch(args[0].toLowerCase()){
             // Contains a list of all of the commands 
             case 'help':
                 let qhelp = [];
@@ -29,6 +39,7 @@ module.exports = {
                 qhelp.push("**show [queue name or id]**: Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!");
                 qhelp.push("**join <queue name or id>**: Join an existing queue. Make sure you type the correct nme of the queue.");
                 qhelp.push("**leave <queue name or id>**: Leave an existing queue. Make sure you type the correct queue name");
+                qhelp.push("**gamelist**: Provides a list of games that you can add to your queue");
 
                 qhelp.push(`\n**Queue Creator Commands: **`);
                 qhelp.push("These commands can be used by those that have created their queue. They allow for some extra permissions for you to manage your queue.");
@@ -37,6 +48,8 @@ module.exports = {
                 qhelp.push("**remove <user>**: Remove a user from your current queue.");
                 qhelp.push("**time <hours:minutes> <am/pm>**: Add a time to your queue so others know when it starts!");
                 qhelp.push("**time clear**: Clears your queue time");
+                qhelp.push("**game <game name>**: Add a game to your queue");
+                qhelp.push("**game clear**: Clear the game from your queue");
                 msg.channel.send(qhelp);
                 break;
             // Create a new queue
@@ -117,10 +130,25 @@ module.exports = {
                     } else msg.reply("You are not in the queue!");
                 } else msg.reply("Queue could not be found. Please ty again.");
                 break;
+            case 'gamelist':
+                const gameEmbed = new Discord.MessageEmbed()
+                    .setColor("NAVY")
+                    .setTitle('Game List: ')
+                    .setAuthor('PandaBot $q')
+                    .setDescription("Below are a list of games that you can add to your queue!")
+                    .setFooter('To set a game for your queue, type $q game <gameName>!');
+                let list = [];    
+                for(var g in gameList){
+                    list.push(g);
+                }
+                list.join(", ");
+                gameEmbed.addField(list, '\u200b');
+                msg.channel.send({embed: gameEmbed});
+                break;
         }
         // If the author has a queue, they will have special permissions over their own queue
         if(checkIfClient(msg.author.tag)){
-            switch(args[0]){
+            switch(args[0].toLowerCase()){
                 case 'delete':
                     let tempD = findQueue(msg.author.tag);
                     delete IDlist[IDlist.indexOf(dict[tempD].id)];
@@ -185,7 +213,23 @@ module.exports = {
                         pm = " PM "
                     }
                     if(minute == 0) minute = "00";
-                    msg.channel.send(notify(tempT) + "\n" + msg.author.username + "'s queue time has been set to " + hour + ":" + minute + pm + "MST");         
+                    msg.channel.send(notify(tempT) + "\n" + msg.author.username + "'s queue time has been set to " + hour + ":" + minute + pm + "MDT");         
+                    break;
+                case 'game':
+                    let tempG = findQueue(msg.author.tag);
+                    if(args[1].toLowerCase() == 'clear' && dict[tempG].game != null){
+                        dict[tempG].game = null;
+                        msg.reply("Your queue game has been cleared");
+                        return;
+                    }
+                    else if(args[1].toLowerCase() == 'clear' && dict[tempG].game == null)
+                        msg.reply("You have no game set for your queue!");
+                    for(var g in gameList){
+                        if(g.toLowerCase() == args[1].toLowerCase()){
+                            dict[tempG].game = g;
+                            msg.reply("You have set your queue game to: " + g);
+                        }
+                    }
                     break;
             }
         }
@@ -198,15 +242,18 @@ function queueListEmbed(){
         .setTitle('Available Queues')
         .setAuthor("PandaBot $q")
         .setDescription("Below are a list of available queues!")
-        .addField("<id> -- <queue name>", "Both id and name can be used to join and leave queues!")
+        .addField("<id> -- <queue name> -- <game name (if available)>", "Both id and name can be used to join and leave queues!")
         .setFooter("Type $q show followed by the name of the queue to see more details about it!");
 
     for(var key in dict){
-        queueList.addField(dict[key].id + " -- " + key, dict[key].client + "'s Queue");
+        let game = " -- " + "{no game selected}";
+        if(dict[key].game != null){
+            game = " -- " + dict[key].game;
+        }
+        queueList.addField(dict[key].id + " -- " + key + game, dict[key].client + "'s Queue");
     }
     return queueList;
 }
-
 function queueEmbed(q){
     const queue = new Discord.MessageEmbed()
         .setColor("RANDOM")
@@ -224,6 +271,9 @@ function queueEmbed(q){
         }
         if(minute == 0) minute = "00";
         queue.setAuthor("Queue Time: " + hour + ":" + minute + pm + "Eastern Standard Time");
+    }
+    if(dict[q].game != null){
+        queue.setThumbnail(gameList[dict[q].game]);
     }
     let tempList = []
     for(var key in dict[q].list){
