@@ -195,7 +195,7 @@ module.exports = {
                         time[0] = parseInt(time[0],10)+12;  
                         time[0] = time[0].toString();  
                     }
-                    dict[tempT].time.setHours(time[0]);
+                    dict[tempT].time.setHours(parseInt(time[0],10)-2);
                     if(time[1] == null) time.push(0); 
                     dict[tempT].time.setMinutes(time[1]);
                     dict[tempT].time.setSeconds(0);
