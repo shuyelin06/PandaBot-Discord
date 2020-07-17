@@ -1,16 +1,10 @@
 const Discord = require('discord.js');
 let dict = {
 };
+const queueVar = require('./queue.json');
+
 let IDlist = [0];
-let gameList = {
-    "League": 'https://i.imgur.com/RjefbUN.png',
-    "CSGO": 'https://i.imgur.com/2RCFhEn.png',
-    "Stardew": 'https://i.imgur.com/Zc87TZ1.png',
-    "Minecraft": 'https://i.imgur.com/LqB6ps8.png',
-    "Valorant": 'https://i.imgur.com/r3PcZBw.png',
-    "Apex": 'https://i.imgur.com/J1yaxlr.png',
-    "Terraria": 'https://i.imgur.com/SzP5uXW.png'
-}
+
 module.exports = {
     name: 'q',
     description: 'Create and manage queues for an easier way to set up games (or anything else)! Type $q help for all of the specific commands!',
@@ -18,37 +12,37 @@ module.exports = {
     execute(msg, args){
         class Queue {
             constructor(client, id, list, notify){
-                this.id = id;
+                this.id = id; // Stores the queue id
                 this.list = [list] // List that contains all of the queue members
                 this.client = client; // Stores who created the queue
                 this.notify = [notify]; // Notifies people if a change occurs to the queue
                 this.time = new Date(0); // Create a queue time
                 this.timeChanged = false; // Store if the queue time has been changed.
-                this.game = null;
+                this.game = null; // Stores the game of the queue, if available
             }
         }
         switch(args[0].toLowerCase()){
             // Contains a list of all of the commands 
             case 'help':
-                let qhelp = [];
-                qhelp.push(`**PandaBot Queue ($q) Commands: **`);
-                qhelp.push("\n**Ordinary Comands: **");
-                qhelp.push("**new**: Create a new queue that others can join (limit one queue per person)!");
-                qhelp.push("**show [queue name or id]**: Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!");
-                qhelp.push("**join <queue name or id>**: Join an existing queue. Make sure you type the correct nme of the queue.");
-                qhelp.push("**leave <queue name or id>**: Leave an existing queue. Make sure you type the correct queue name");
-                qhelp.push("**gamelist**: Provides a list of games that you can add to your queue");
-
-                qhelp.push(`\n**Queue Creator Commands: **`);
-                qhelp.push("These commands can be used by those that have created their queue. They allow for some extra permissions for you to manage your queue.");
-                qhelp.push("**delete**: Delete your current queue.");
-                qhelp.push("**add <user>**: Add a user to your current queue.");
-                qhelp.push("**remove <user>**: Remove a user from your current queue.");
-                qhelp.push("**time <hours:minutes> <am/pm>**: Add a time to your queue so others know when it starts!");
-                qhelp.push("**time clear**: Clears your queue time");
-                qhelp.push("**game <game name>**: Add a game to your queue");
-                qhelp.push("**game clear**: Clear the game from your queue");
-                msg.channel.send(qhelp);
+                const qhelp = new Discord.MessageEmbed()
+                    .setColor("GREEN")
+                    .setTitle('PandaBot $q help commands')
+                    .setAuthor('PandaBot $q help')
+                    .setDescription("Below are all of the commands for the queues!");
+                
+                if(!args[1] || (args[1] != 1 && args[1] != 2)){
+                    qhelp.addField("Ordinary Commands: ", "Type $q help 1 for commands that everyone can use!");
+                    qhelp.addField("Queue Creator Commands: ", "Type $q help 2 for commands that queue creators can use!");
+                } else if (args[1] == 1){
+                    for(var h in queueVar.helpOrdinary){
+                        qhelp.addField(h, queueVar.helpOrdinary[h]);
+                    }
+                } else if (args[1] == 2){
+                    for(var q in queueVar.helpCreator){
+                        qhelp.addField(q, queueVar.helpCreator[q]);
+                    }
+                } 
+                msg.channel.send({embed: qhelp});
                 break;
             // Create a new queue
             case 'new':
@@ -136,7 +130,7 @@ module.exports = {
                     .setDescription("Below are a list of games that you can add to your queue!")
                     .setFooter('To set a game for your queue, type $q game <gameName>!');
                 let list = [];    
-                for(var g in gameList){
+                for(var g in queueVar.gameList){
                     list.push(g);
                 }
                 list.join(", ");
@@ -222,7 +216,7 @@ module.exports = {
                     }
                     else if(args[1].toLowerCase() == 'clear' && dict[tempG].game == null)
                         msg.reply("You have no game set for your queue!");
-                    for(var g in gameList){
+                    for(var g in queueVar.gameList){
                         if(g.toLowerCase() == args[1].toLowerCase()){
                             dict[tempG].game = g;
                             msg.reply("You have set your queue game to: " + g);
@@ -271,7 +265,7 @@ function queueEmbed(q){
         queue.setAuthor("Queue Time: " + hour + ":" + minute + pm + "Eastern Standard Time");
     }
     if(dict[q].game != null){
-        queue.setThumbnail(gameList[dict[q].game]);
+        queue.setThumbnail(queueVar.gameList[dict[q].game]);
     }
     let tempList = []
     for(var key in dict[q].list){

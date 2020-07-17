@@ -1,0 +1,30 @@
+{
+    "gameList": {
+        "League": "https://i.imgur.com/RjefbUN.png",
+        "CSGO": "https://i.imgur.com/2RCFhEn.png",
+        "Stardew": "https://i.imgur.com/Zc87TZ1.png",
+        "Minecraft": "https://i.imgur.com/LqB6ps8.png",
+        "Valorant": "https://i.imgur.com/r3PcZBw.png",
+        "Apex": "https://i.imgur.com/J1yaxlr.png",
+        "Terraria": "https://i.imgur.com/SzP5uXW.png",
+        "Realm": "https://i.imgur.com/Il7DOXc.png"
+    },
+    "helpOrdinary": {
+        "Ordinary Commands: ": "These commands can be used regardless of if you have a queue or not. \n",
+        "new": "Create a new queue that others can join (limit one queue per person)!",
+        "show [queue name or id]": "Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!", 
+        "join <queue name or id>": "Join an existing queue. Make sure you type the correct nme of the queue.",
+        "leave <queue name or id>": "Leave an existing queue. Make sure you type the correct queue name",
+        "gamelist": "Provides a list of games that you can add to your queue"
+    },
+    "helpCreator": {
+        "Queue Creator Commands: ": "These commands can be used by those that have created a queue. They allow for some extra permissions for you to manage your queue. \n",
+        "delete": "Delete your current queue.",
+        "add <user>": "Add a user to your current queue.",
+        "remove <user>": "Remove a user from your current queue.",
+        "time <hours:minutes> <am/pm>": "Add a time to your queue so others know when it starts!",
+        "time clear": "Clears your queue time",
+        "game <game name>": "Add a game to your queue",
+        "game clear": "Clear the game from your queue"
+    }
+}
