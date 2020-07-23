@@ -2,7 +2,6 @@ const Discord = require('discord.js');
 let dict = {
 };
 const queueVar = require('./queue.json');
-
 let IDlist = [0];
 
 module.exports = {
@@ -56,6 +55,10 @@ module.exports = {
                     }
                     if(Object.keys(dict).length == 0){
                         dict[args[1]] = new Queue(msg.author.tag, queueID(), msg.author.username, msg.author);
+                        if(msg.guild.roles.cache.has('733398205198237716')){
+                            const role = msg.guild.roles.cache.find(r => r.name === 'Queue Gang');
+                            msg.channel.send("Queue Gang Notification: " + role.members.map(m => m.user).join('\n'));
+                        }
                         msg.reply("You have created a new queue called " + args[1] + "!");
                     }
                     else {
@@ -65,6 +68,10 @@ module.exports = {
                         }
                         if(lengthCheck == Object.keys(dict).length){
                             dict[args[1]] = new Queue(msg.author.tag, queueID(), msg.author.username, msg.author);
+                            if(msg.guild.roles.cache.has('733398205198237716')){
+                                const role = msg.guild.roles.cache.find(r => r.name === 'Queue Gang');
+                                msg.channel.send("Queue Gang Notification: A new queue has been created! \n" + role.members.map(m => m.user).join('\n'));
+                            }
                             msg.reply("You have created a new queue called " + args[1] + "!");
                         }
                         else msg.reply("A queue with this name already exists!");
@@ -136,6 +143,16 @@ module.exports = {
                 list.join(", ");
                 gameEmbed.addField(list, '\u200b');
                 msg.channel.send({embed: gameEmbed});
+                break;
+            case 'role':
+                const role = msg.guild.roles.cache.find(r => r.name === 'Queue Gang');
+                if(!msg.member.roles.cache.has('733398205198237716')){
+                    msg.member.roles.add(role);
+                    msg.reply("You will be notified everytime a queue is created!");
+                } else if(msg.member.roles.cache.has('733398205198237716')){
+                    msg.member.roles.remove(role);
+                    msg.reply("You will no longer be notified everytime a queue is created.");
+                } else msg.reply("Either you have this role, or your server does not have this role!");
                 break;
         }
         // If the author has a queue, they will have special permissions over their own queue

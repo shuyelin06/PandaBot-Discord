@@ -16,7 +16,8 @@
         "show [queue name or id]": "Show all of the existing queues, as well as their creator! Add the queue name after 'show' to get a list of the people in a specific queue!", 
         "join <queue name or id>": "Join an existing queue. Make sure you type the correct nme of the queue.",
         "leave <queue name or id>": "Leave an existing queue. Make sure you type the correct queue name",
-        "gamelist": "Provides a list of games that you can add to your queue"
+        "gamelist": "Provides a list of games that you can add to your queue",
+        "role": "Notifies you every time a new queue is created!"
     },
     "helpCreator": {
         "Queue Creator Commands: ": "These commands can be used by those that have created a queue. They allow for some extra permissions for you to manage your queue. \n",
