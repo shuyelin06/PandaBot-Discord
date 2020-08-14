@@ -5,9 +5,9 @@ const queueVar = require('./queue.json');
 let IDlist = [0];
 
 module.exports = {
-    name: 'q',
+    name: 'queue',
     description: 'Create and manage queues for an easier way to set up games (or anything else)! Type $q help for all of the specific commands!',
-    aliases: ['queue'],
+    aliases: ['q'],
     execute(msg, args){
         class Queue {
             constructor(client, id, list, notify){
