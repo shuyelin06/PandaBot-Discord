@@ -4,7 +4,7 @@ const fs = require("fs");
 
 module.exports = {
     name: 'event',
-    description: 'Check if the bot is online',
+    description: 'Create and manage discord server events!',
     aliases: ['e', 'events'],
     execute(msg, args){
         class Event {
@@ -15,6 +15,9 @@ module.exports = {
             }
         }
         switch(args[0].toLowerCase()){
+            case "help":
+                msg.reply("This command is still a WIP. Go annoy Pandakidz2 to get it finished faster");
+                break;
             case "new":
                 if(!args[1]){
                     msg.reply("Please provide a valid name.")
@@ -27,14 +30,20 @@ module.exports = {
                 for(var key in data){
                     if(data[key]["id"]==id) id++;
                 }
-                data[args[1]] = {
+                if(!isNaN(args[1])){
+                    msg.reply("Your name cannot begin with a number.")
+                    break;
+                }
+                let name = args.slice(1, args.length).join(" ");
+                console.log(name);
+                data[name] = {
                     "list": new Event(msg.author.username),
                     "time": "",
                     "id": id,
                     "description": "Admins, Players, and Spectators of this event."
                 };
                 writeFile();
-                msg.reply("Success! Your event " + args[1] + " has been created!");
+                msg.reply("Success! Your event " + name + " has been created!");
                 break;
             case "show":
                 const embed = new Discord.MessageEmbed()
@@ -57,6 +66,8 @@ module.exports = {
                 try{
                     if(!isNaN(args[1])){
                         args[1] = eventID(parseInt(args[1],10));
+                    } else if(args.length > 2){
+                        args[1] = args.slice(1, args.length).join(" ");
                     }
                     embed
                         .setTitle("Event: " + args[1])
@@ -81,6 +92,8 @@ module.exports = {
                 try {
                     if(!isNaN(args[1])){
                         args[1] = eventID(parseInt(args[1],10));
+                    } else if(args.length > 2){
+                        args[1] = args.slice(1, args.length).join(" ");
                     }
                     for(var i in data[args[1]]["list"]["players"]){
                         if(data[args[1]]["list"]["players"][i] == msg.author.username){
@@ -103,6 +116,8 @@ module.exports = {
                 try {
                     if(!isNaN(args[1])){
                         args[1] = eventID(parseInt(args[1],10));
+                    } else if(args.length > 2){
+                        args[1] = args.slice(1, args.length).join(" ");
                     }
                     let spectating = false;
                     for(var i in data[args[1]]["list"]["spectators"]){
@@ -133,6 +148,8 @@ module.exports = {
                     try{
                         if(!isNaN(args[1])){
                             args[1] = eventID(parseInt(args[1],10));
+                        } else if(args.length > 2){
+                            args[1] = args.slice(1, args.length).join(" ");
                         }
                         delete data[args[1]]
                         writeFile();
@@ -150,6 +167,8 @@ module.exports = {
                 try{
                     if(!isNaN(args[1])){
                         args[1] = eventID(parseInt(args[1],10));
+                    } else if(args.length > 2){
+                        args[1] = args.slice(1, args.length).join(" ");
                     }
                     let j = data[args[1]]["list"]["players"].indexOf(msg.author.username);
                     if(j == -1){
@@ -171,6 +190,8 @@ module.exports = {
                 try{
                     if(!isNaN(args[1])){
                         args[1] = eventID(parseInt(args[1],10));
+                    } else if(args.length > 2){
+                        args[1] = args.slice(1, args.length).join(" ");
                     }
                     let j = data[args[1]]["list"]["spectators"].indexOf(msg.author.username);
                     if(j == -1){
@@ -187,7 +208,7 @@ module.exports = {
         }
         if(!isNaN(args[0])){
             args[0] = eventID(parseInt(args[0],10));
-        }
+        } 
         if(eventExists(args[0])){
             let admin = false;
             for(var i in data[args[0]]["list"]["admins"]){
