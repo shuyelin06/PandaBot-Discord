@@ -249,6 +249,11 @@ module.exports = {
                         msg.reply("There was an error in running that command.");
                     }
                     break;
+                case "delete":
+                    delete data[[args[0]]];
+                    writeFile();
+                    msg.reply("Event " + args[0] + " has been deleted.");
+                    break;
             }
         }
     }
