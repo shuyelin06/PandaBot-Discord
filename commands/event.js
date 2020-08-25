@@ -267,7 +267,8 @@ function eventExists(input){
 }
 
 function writeFile(){
-    fs.writeFile('./commands/events.json', JSON.stringify(data), err => {
+    data = JSON.stringify(data).split("{").join("\n");
+    fs.writeFile('./commands/events.json', data, err => {
         if (err) console.log('Error writing file'); 
     })
 }
