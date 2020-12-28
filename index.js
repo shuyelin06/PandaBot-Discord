@@ -1,3 +1,12 @@
+// Setting up webserver
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => res.send('Hello!'));
+app.listen(port, () => console.log('Listening'));
+
+
 const fs = require('fs');
 const Discord = require('discord.js');
 const bot = new Discord.Client();
@@ -11,11 +20,11 @@ for (const file of commandFiles){
     bot.commands.set(command.name, command);
 }
 
-const { prefix, token } = require('./config.json');
+const prefix = process.env.PREFIX;
 
 bot.on('ready', () =>{
     console.log('Bot is online!');
-    bot.user.setActivity("$help");
+    bot.user.setActivity(prefix + "help");
 })
 /* DO NOT EDIT ANYTHING ABOVE THIS CODE. LEAVE THIS CODE AS IS. 
 THIS CODE MUST REMAIN THE SAME.*/
@@ -56,4 +65,4 @@ bot.on('message', msg =>{
     }
 });
 
-bot.login(token);
+bot.login(process.env.TOKEN);
