@@ -18,6 +18,7 @@ var roastList = [
 module.exports = {
     name: 'roast',
     description: 'Roast people - Made for Alice\'s birthday',
+    aliases: ['r'],
     guildOnly: true,
     args: true,
     usage: '<tagged user>',

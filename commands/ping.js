@@ -1,7 +1,7 @@
 module.exports = {
-    name: 'test',
+    name: 'ping',
     description: 'Check if the bot is online',
-    aliases: ['t'],
+    aliases: ['p'],
     execute(msg, args){
         msg.reply("I am online!");
     }
